@@ -50,7 +50,8 @@ button:hover { background-color: #45a049; }
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  fetch('/langlunches.github.io/aravind/data/slots.yml')
+  // Use relative path to data file
+  fetch('/data/slots.yml')
     .then(response => response.text())
     .then(yaml => {
       const slots = jsyaml.load(yaml).slots;
