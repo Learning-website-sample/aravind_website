@@ -5,7 +5,14 @@ permalink: /calendar/
 ---
 
 <div class="calendar-container">
-  <div id="calendar"></div>
+  <iframe 
+    src="https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID&ctz=Europe%2FBerlin&mode=WEEK&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0&height=600" 
+    style="border:solid 1px #777" 
+    width="100%" 
+    height="600" 
+    frameborder="0" 
+    scrolling="no">
+  </iframe>
 </div>
 
 <div class="booking-modal" id="bookingModal">
