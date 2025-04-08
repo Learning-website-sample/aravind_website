@@ -1,4 +1,4 @@
-[Schedule](https://unisaarlandde-my.sharepoint.com/:x:/g/personal/dapo007_uni-saarland_de/EWyz7u5z97dBuriO1U2Lt98BzAxUuZmYF12YV5dqMOzvKg?e=ilmHgO)&emsp;&emsp;[Register for the mailing list](https://docs.google.com/forms/d/e/1FAIpQLScuVIskcUiXhDBV5XwT_KAQIO0OMFVZHKOC2ubPMFnkTW9DdA/viewform?usp=sharing)
+[Schedule](https://langlunches.github.io/calendar)&emsp;&emsp;[Register for the mailing list](https://docs.google.com/forms/d/e/1FAIpQLScuVIskcUiXhDBV5XwT_KAQIO0OMFVZHKOC2ubPMFnkTW9DdA/viewform?usp=sharing)
 
 # LangLunches
 
@@ -19,4 +19,9 @@ Wednesdays 12:00 - 13:00 (biweekly), Building A2.2, Room 2.13
 
 ## Signing up to present
 
-If you have a topic you'd like to present on, just fill in your name, topic, email address, and any other relevant information at any available date [in this spreadsheet](https://unisaarlandde-my.sharepoint.com/:x:/g/personal/dapo007_uni-saarland_de/EWyz7u5z97dBuriO1U2Lt98BzAxUuZmYF12YV5dqMOzvKg?e=ilmHgO).
+You can now easily book a presentation slot through our online calendar! Visit the [Schedule page](https://langlunches.github.io/calendar) to:
+1. View upcoming available slots
+2. Book a slot by clicking on an available time
+3. Fill in your presentation details
+
+The calendar shows all available slots for the next few months. Each slot is 15 minutes long, and we typically have two slots per session. Once a slot is booked, it will be marked as unavailable.
