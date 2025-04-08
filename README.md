@@ -20,9 +20,9 @@ Wednesdays 12:00 - 13:00 (biweekly), Building A2.2, Room 2.13
 ## Signing up to present
 
 To sign up for a presentation slot:
-1. Visit our [Google Calendar](https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID)
-2. Click on any available Wednesday slot
-3. Add your name and presentation title in the event details
-4. Save the event
+1. Visit our [Schedule page](https://langlunches.github.io/langlunches.github.io/aravind/calendar)
+2. Click on any available slot (shown in orange)
+3. Enter your name and presentation title
+4. Submit the form
 
-The calendar shows all available slots for the next few months. Each slot is 15 minutes long, and we typically have two slots per session. Once a slot is booked, it will be marked as unavailable.
+The calendar shows all available slots for the next few months. Each slot is 15 minutes long, and we typically have two slots per session. Once a slot is booked, it will be marked as unavailable (shown in green).
