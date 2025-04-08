@@ -1,7 +1,7 @@
 name: "LangLunches"
 title: "LangLunches - Research Talks at UdS"
 description: "Biweekly talks by PhDs and postdocs in the LST department at UdS"
-baseurl: ""
+baseurl: ""  # the subpath of your site, e.g. /blog
 url: "https://langlunches.github.io"
 
 # Build settings
@@ -10,3 +10,31 @@ theme: minima
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .bundle
+  - .github
+
+# Collections
+collections:
+  pages:
+    permalink: /:collection/:path/
+    output: true
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
