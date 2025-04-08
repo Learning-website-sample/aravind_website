@@ -43,6 +43,9 @@ permalink: /calendar/
 .form-group input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
 button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
 button:hover { background-color: #45a049; }
+.status-message { display: none; margin-top: 10px; padding: 10px; border-radius: 4px; }
+.success { background-color: #dff0d8; color: #3c763d; }
+.error { background-color: #f2dede; color: #a94442; }
 </style>
 
 <script>
@@ -86,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
   window.onclick = (event) => { if (event.target == document.getElementById('bookingModal')) document.getElementById('bookingModal').style.display = 'none'; }
 
   // Form submission
-  document.getElementById('bookingForm').onsubmit = function(e) {
+  document.getElementById('bookingForm').onsubmit = async function(e) {
     e.preventDefault();
     const formData = new FormData(this);
     const data = {
@@ -95,9 +98,55 @@ document.addEventListener('DOMContentLoaded', function() {
       speaker: formData.get('name'),
       title: formData.get('title')
     };
-    // Here you would send this to your backend
-    document.getElementById('bookingModal').style.display = 'none';
-    alert('Thank you for your submission! We will contact you shortly.');
+
+    // Create issue body
+    const issueBody = `## Presentation Details
+- **Speaker:** ${data.speaker}
+- **Title:** ${data.title}
+- **Date:** ${data.date}
+- **Time:** ${data.time}
+
+This issue was created automatically from the booking form.`;
+
+    try {
+      const response = await fetch('https://api.github.com/repos/LangLunches/langlunches.github.io/issues', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify({
+          title: `[Booking] ${data.speaker} - ${data.title}`,
+          body: issueBody,
+          labels: ['booking']
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create issue');
+      }
+
+      // Show success message
+      const statusDiv = document.createElement('div');
+      statusDiv.className = 'status-message success';
+      statusDiv.textContent = 'Thank you for your submission! We will process your booking shortly.';
+      this.appendChild(statusDiv);
+      statusDiv.style.display = 'block';
+
+      // Close modal after 2 seconds
+      setTimeout(() => {
+        document.getElementById('bookingModal').style.display = 'none';
+        statusDiv.remove();
+      }, 2000);
+
+    } catch (error) {
+      // Show error message
+      const statusDiv = document.createElement('div');
+      statusDiv.className = 'status-message error';
+      statusDiv.textContent = 'Sorry, there was an error submitting your booking. Please try again later.';
+      this.appendChild(statusDiv);
+      statusDiv.style.display = 'block';
+    }
   }
 });
 </script> 

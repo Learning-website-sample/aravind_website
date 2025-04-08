@@ -1,0 +1,72 @@
+name: Process Booking Issues
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  process-booking:
+    if: contains(github.event.issue.labels.*.name, 'booking')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+          
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh
+          
+      - name: Process Booking
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get issue details
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          ISSUE_BODY="${{ github.event.issue.body }}"
+          
+          # Extract booking details from issue body
+          SPEAKER=$(echo "$ISSUE_BODY" | grep -oP '(?<=\*\*Speaker:\*\* ).*')
+          TITLE=$(echo "$ISSUE_BODY" | grep -oP '(?<=\*\*Title:\*\* ).*')
+          DATE=$(echo "$ISSUE_BODY" | grep -oP '(?<=\*\*Date:\*\* ).*')
+          TIME=$(echo "$ISSUE_BODY" | grep -oP '(?<=\*\*Time:\*\* ).*')
+          
+          # Update slots.yml
+          ruby -e '
+            require "yaml"
+            slots_file = "_data/slots.yml"
+            slots = YAML.load_file(slots_file)
+            
+            # Find the matching slot
+            slot_index = slots["slots"].find_index { |s| s["date"] == ENV["DATE"] && s["time"] == ENV["TIME"] }
+            
+            if slot_index
+              # Update the slot
+              slots["slots"][slot_index]["speaker"] = ENV["SPEAKER"]
+              slots["slots"][slot_index]["title"] = ENV["TITLE"]
+              
+              # Write back to file
+              File.write(slots_file, slots.to_yaml)
+              
+              # Add comment to issue
+              system("gh issue comment #{ENV["ISSUE_NUMBER"]} --body \"✅ Booking processed and calendar updated!\"")
+              
+              # Close the issue
+              system("gh issue close #{ENV["ISSUE_NUMBER"]}")
+            else
+              system("gh issue comment #{ENV["ISSUE_NUMBER"]} --body \"❌ Error: Could not find matching slot for the specified date and time.\"")
+            end
+          ' 
