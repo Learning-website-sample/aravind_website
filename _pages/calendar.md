@@ -4,6 +4,8 @@ title: Schedule
 permalink: /calendar/
 ---
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+
 <div class="calendar-container">
   <div id="calendar"></div>
 </div>
@@ -45,7 +47,7 @@ button:hover { background-color: #45a049; }
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  fetch('/data/slots.yml')
+  fetch('/langlunches.github.io/aravind/data/slots.yml')
     .then(response => response.text())
     .then(yaml => {
       const slots = jsyaml.load(yaml).slots;
