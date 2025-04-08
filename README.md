@@ -1,4 +1,4 @@
-[Schedule](https://langlunches.github.io/calendar)&emsp;&emsp;[Register for the mailing list](https://docs.google.com/forms/d/e/1FAIpQLScuVIskcUiXhDBV5XwT_KAQIO0OMFVZHKOC2ubPMFnkTW9DdA/viewform?usp=sharing)
+[Schedule](https://langlunches.github.io/langlunches.github.io/aravind/calendar)&emsp;&emsp;[Register for the mailing list](https://docs.google.com/forms/d/e/1FAIpQLScuVIskcUiXhDBV5XwT_KAQIO0OMFVZHKOC2ubPMFnkTW9DdA/viewform?usp=sharing)
 
 # LangLunches
 
@@ -19,7 +19,7 @@ Wednesdays 12:00 - 13:00 (biweekly), Building A2.2, Room 2.13
 
 ## Signing up to present
 
-You can now easily book a presentation slot through our online calendar! Visit the [Schedule page](https://langlunches.github.io/calendar) to:
+You can now easily book a presentation slot through our online calendar! Visit the [Schedule page](https://langlunches.github.io/langlunches.github.io/aravind/calendar) to:
 1. View upcoming available slots
 2. Book a slot by clicking on an available time
 3. Fill in your presentation details
