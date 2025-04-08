@@ -1,0 +1,17 @@
+slots:
+  - date: "2024-04-17"
+    time: "12:00"
+    speaker: "John Doe"
+    title: "Example Presentation"
+  - date: "2024-04-17"
+    time: "12:20"
+    speaker: "Jane Smith"
+    title: "Another Example"
+  - date: "2024-05-01"
+    time: "12:00"
+    speaker: null
+    title: null
+  - date: "2024-05-01"
+    time: "12:20"
+    speaker: null
+    title: null 
