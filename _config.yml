@@ -38,3 +38,8 @@ defaults:
       type: "posts"
     values:
       layout: "post"
+
+# Navigation
+header_pages:
+  - Schedule
+  - Register
