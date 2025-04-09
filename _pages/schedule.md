@@ -3,7 +3,6 @@ layout: single
 title: Schedule
 permalink: /schedule/
 classes: wide
-collection: pages
 ---
 
 # LangLunches Schedule

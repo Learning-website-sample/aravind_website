@@ -11,18 +11,16 @@ minimal_mistakes_skin: "default"
 markdown: kramdown
 permalink: pretty
 
-# Collections
-collections:
-  pages:
-    output: true
-    permalink: /:collection/:path/
+# Include directories
+include:
+  - _pages
 
 # Default front matter
 defaults:
   -
     scope:
       path: ""
-      type: "pages"
+      type: pages
     values:
       layout: "single"
       author: "LST Department"
