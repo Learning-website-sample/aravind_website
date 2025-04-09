@@ -89,7 +89,7 @@ All sessions are held on Tuesdays at 12:00 and 12:30.
 
 <dialog id="bookingDialog">
     <div id="bookingContent"></div>
-    <form id="bookingForm" action="https://github.com/akrishnan/langlunches.github.io/issues/new" method="get" target="_blank">
+    <form id="bookingForm" action="https://github.com/Learning-website-sample/aravind_website/issues/new" method="get" target="_blank">
         <input type="hidden" id="slotDate" name="slotDate">
         <div class="form-group">
             <label for="name">Your Name:</label>
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `Please review this booking request and update the events data file accordingly.`;
         
         // Set the form action with the issue parameters
-        this.action = `https://github.com/akrishnan/langlunches.github.io/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=booking-request`;
+        this.action = `https://github.com/Learning-website-sample/aravind_website/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=booking-request`;
     });
 
     // Handle dialog close buttons
