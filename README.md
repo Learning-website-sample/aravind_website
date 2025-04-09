@@ -1,6 +1,7 @@
 ---
 layout: home
 title: LangLunches
+permalink: /
 ---
 
 # Welcome to LangLunches

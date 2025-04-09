@@ -1,7 +1,7 @@
 title: LangLunches
 description: Biweekly talks by PhDs and postdocs in the LST department at UdS
-baseurl: ""
-url: "https://langlunches.github.io"
+baseurl: "/aravind_website"
+url: "https://learning-website-sample.github.io"
 
 # Theme settings
 remote_theme: mmistakes/minimal-mistakes@4.24.0
@@ -14,6 +14,10 @@ permalink: pretty
 # Include directories
 include:
   - _pages
+  - _layouts
+  - _posts
+  - _data
+  - assets
 
 # Default front matter
 defaults:
@@ -26,6 +30,12 @@ defaults:
       author: "LST Department"
       share: false
       comments: false
+  -
+    scope:
+      path: "README.md"
+    values:
+      layout: "home"
+      permalink: "/"
 
 # Exclude from processing
 exclude:
