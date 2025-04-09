@@ -1,41 +1,95 @@
-name: Update Events from Approved Issues
+name: Update Events on Issue Close
 
 on:
   issues:
-    types: [labeled]
+    types: [closed]
 
 jobs:
   update-events:
-    if: github.event.label.name == 'approved'
+    if: contains(github.event.issue.labels.*.name, 'booking-request')
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: read
+      pull-requests: write
     
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.10'
       
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
       
-      - name: Update events.yml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract booking information
+        id: extract
         run: |
-          python .github/scripts/update_events.py
+          # Extract date, speaker, and title from issue body
+          BODY="${{ github.event.issue.body }}"
+          DATE=$(echo "$BODY" | grep -oP '(?<=Date: ).*')
+          SPEAKER=$(echo "$BODY" | grep -oP '(?<=Speaker: ).*')
+          TITLE=$(echo "$BODY" | grep -oP '(?<=Title: ).*')
+          
+          # Set outputs for later use
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+          echo "speaker=$SPEAKER" >> $GITHUB_OUTPUT
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
       
-      - name: Commit and push if changed
+      - name: Update events.yml
+        run: |
+          python - <<EOF
+          import yaml
+          import os
+          
+          # Load the current events.yml file
+          with open('_data/events.yml', 'r') as file:
+              data = yaml.safe_load(file)
+          
+          # Extract booking information
+          date = os.environ['date']
+          speaker = os.environ['speaker']
+          title = os.environ['title']
+          
+          # Find the event for this date
+          event_found = False
+          for event in data['events']:
+              if event['date'] == date:
+                  event_found = True
+                  # Find an empty slot
+                  for slot in event['slots']:
+                      if not slot['title'] and not slot['speaker']:
+                          slot['title'] = title
+                          slot['speaker'] = speaker
+                          break
+                  break
+          
+          # If no event found for this date, create a new one
+          if not event_found:
+              new_event = {
+                  'date': date,
+                  'slots': [
+                      {'title': title, 'speaker': speaker},
+                      {'title': '', 'speaker': ''}
+                  ]
+              }
+              data['events'].append(new_event)
+          
+          # Write the updated data back to the file
+          with open('_data/events.yml', 'w') as file:
+              yaml.dump(data, file, default_flow_style=False, sort_keys=False)
+          EOF
+      
+      - name: Commit and push changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add _data/events.yml
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update events.yml from approved issue" && git push) 
+          git commit -m "Update events.yml with new booking from issue #${{ github.event.issue.number }}"
+          git push 

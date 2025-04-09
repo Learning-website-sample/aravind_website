@@ -1,13 +1,19 @@
 events:
-  - date: "2025-04-16"
+  - date: "2024-03-20"
     slots:
-      - title: "Cool NLP Talk"
-        speaker: "Aravind"
+      - title: "Introduction to Machine Learning"
+        speaker: "John Doe"
       - title: ""
         speaker: ""
-  - date: "2025-04-23"
+  - date: "2024-03-27"
     slots:
-      - title: "sss"
-        speaker: "sss"
-      - title: "aaa"
-        speaker: "aaa"
+      - title: ""
+        speaker: ""
+      - title: ""
+        speaker: ""
+  - date: "2024-04-03"
+    slots:
+      - title: "Deep Learning Basics"
+        speaker: "Jane Smith"
+      - title: "Neural Networks"
+        speaker: "Bob Johnson"

@@ -11,15 +11,11 @@ All sessions are held on Wednesdays at 12:00 and 12:30.
 
 <div class="calendar-legend">
     <div class="legend-item">
-        <div class="legend-color" style="background: #e6ffe6;"></div>
-        <span>Available Wednesday</span>
+        <div class="legend-color calendar-event"></div>
+        <span>Available</span>
     </div>
     <div class="legend-item">
-        <div class="legend-color" style="background: #90EE90;"></div>
-        <span>One Booking</span>
-    </div>
-    <div class="legend-item">
-        <div class="legend-color" style="background: #ff6b6b;"></div>
+        <div class="legend-color calendar-full"></div>
         <span>Fully Booked</span>
     </div>
 </div>
@@ -29,27 +25,34 @@ All sessions are held on Wednesdays at 12:00 and 12:30.
 </div>
 
 <dialog id="eventDialog">
-    <div id="eventContent"></div>
-    <button type="button" onclick="this.closest('dialog').close()">Close</button>
+    <div class="dialog-content">
+        <h3>Event Details</h3>
+        <div id="eventDetails"></div>
+        <div class="dialog-buttons">
+            <button onclick="closeEventDialog()">Close</button>
+        </div>
+    </div>
 </dialog>
 
 <dialog id="bookingDialog">
-    <div id="bookingContent"></div>
-    <form id="bookingForm" action="https://github.com/Learning-website-sample/aravind_website/issues/new" method="get" target="_blank">
-        <input type="hidden" id="slotDate" name="slotDate">
-        <div class="form-group">
-            <label for="name">Your Name:</label>
-            <input type="text" id="name" name="name" required>
-        </div>
-        <div class="form-group">
-            <label for="title">Presentation Title:</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <div class="form-group">
-            <button type="submit">Submit Booking Request</button>
-            <button type="button" onclick="this.closest('dialog').close()">Cancel</button>
-        </div>
-    </form>
+    <div class="dialog-content">
+        <h3>Request Booking</h3>
+        <form id="bookingForm">
+            <input type="hidden" id="bookingDate" name="date">
+            <div class="form-group">
+                <label for="speaker">Speaker Name:</label>
+                <input type="text" id="speaker" name="speaker" required>
+            </div>
+            <div class="form-group">
+                <label for="title">Talk Title:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="dialog-buttons">
+                <button type="button" onclick="closeBookingDialog()">Cancel</button>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
 </dialog>
 
 <style>
@@ -205,29 +208,9 @@ button:hover {
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Calendar script loaded");
     
-    // Sample events data (in a real app, this would come from your backend)
-    const events = [
-        { date: "2024-04-09", slots: [
-            { title: "Introduction to Python", speaker: "John Doe" },
-            { title: "JavaScript Basics", speaker: "Jane Smith" }
-        ]},
-        { date: "2024-04-23", slots: [
-            { title: "Data Structures in Java", speaker: "Mike Johnson" },
-            { title: "Web Development with React", speaker: "Sarah Wilson" }
-        ]},
-        { date: "2024-05-07", slots: [
-            { title: "Machine Learning Basics", speaker: "Alex Brown" },
-            { title: "", speaker: "" }
-        ]},
-        { date: "2024-05-21", slots: [
-            { title: "", speaker: "" },
-            { title: "", speaker: "" }
-        ]},
-        { date: "2024-06-04", slots: [
-            { title: "Cloud Computing", speaker: "Emma Davis" },
-            { title: "DevOps Practices", speaker: "Tom Wilson" }
-        ]}
-    ];
+    // Load events from Jekyll data
+    const events = {{ site.data.events.events | jsonify }};
+    console.log("Loaded events:", events);
     
     // Get current date
     const currentDate = new Date();
@@ -307,13 +290,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 // Add event data
                 dayCell.setAttribute("data-date", dateStr);
-                dayCell.setAttribute("data-events", dayEvents.slots
-                    .filter(slot => slot.title && slot.speaker)
-                    .map(slot => `<b>Presentation:</b> ${slot.title} by ${slot.speaker}`)
-                    .join("<br>"));
+                dayCell.setAttribute("data-events", JSON.stringify(dayEvents.slots));
+                
+                // Add click handler
+                if (!isPast) {
+                    dayCell.addEventListener("click", () => showEventDialog(dateStr, dayEvents.slots));
+                }
             } else if (isWednesday && !isPast) {
-                dayCell.classList.add("calendar-wednesday");
+                // Add empty event data for Wednesdays
                 dayCell.setAttribute("data-date", dateStr);
+                dayCell.setAttribute("data-events", JSON.stringify([{title: "", speaker: ""}, {title: "", speaker: ""}]));
+                dayCell.addEventListener("click", () => showEventDialog(dateStr, [{title: "", speaker: ""}, {title: "", speaker: ""}]));
             }
             
             if (isPast) {
@@ -327,44 +314,105 @@ document.addEventListener("DOMContentLoaded", () => {
         monthContainer.appendChild(calendarGrid);
         calendarContainer.appendChild(monthContainer);
     }
+});
+
+function showEventDialog(date, slots) {
+    const dialog = document.getElementById("eventDialog");
+    const details = document.getElementById("eventDetails");
     
-    // Add event listeners
-    const eventDialog = document.getElementById("eventDialog");
-    const eventContent = document.getElementById("eventContent");
-    const bookingDialog = document.getElementById("bookingDialog");
-    const bookingForm = document.getElementById("bookingForm");
+    // Clear previous content
+    details.innerHTML = "";
     
-    // Add click handlers to calendar days
-    document.querySelectorAll(".calendar-wednesday, .calendar-event, .calendar-full").forEach(day => {
-        if (day.classList.contains("calendar-past")) return;
+    // Add date header
+    const dateHeader = document.createElement("h4");
+    dateHeader.textContent = new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    details.appendChild(dateHeader);
+    
+    // Add slots
+    slots.forEach((slot, index) => {
+        const slotDiv = document.createElement("div");
+        slotDiv.className = "event-slot";
         
-        day.addEventListener("click", () => {
-            const date = day.getAttribute("data-date");
-            const events = day.getAttribute("data-events");
-            
-            if (events) {
-                eventContent.innerHTML = `<h3>${date}</h3><p>${events}</p>`;
-                eventDialog.showModal();
-            } else {
-                document.getElementById("slotDate").value = date;
-                bookingDialog.showModal();
-            }
+        if (slot.title && slot.speaker) {
+            slotDiv.innerHTML = `
+                <h5>Slot ${index + 1}</h5>
+                <p><strong>Speaker:</strong> ${slot.speaker}</p>
+                <p><strong>Title:</strong> ${slot.title}</p>
+            `;
+        } else {
+            slotDiv.innerHTML = `
+                <h5>Slot ${index + 1}</h5>
+                <p>Available</p>
+                <button onclick="showBookingDialog('${date}', ${index})">Request Booking</button>
+            `;
+        }
+        
+        details.appendChild(slotDiv);
+    });
+    
+    dialog.showModal();
+}
+
+function closeEventDialog() {
+    const dialog = document.getElementById("eventDialog");
+    dialog.close();
+}
+
+function showBookingDialog(date, slotIndex) {
+    const dialog = document.getElementById("bookingDialog");
+    const form = document.getElementById("bookingForm");
+    const dateInput = document.getElementById("bookingDate");
+    
+    dateInput.value = `${date}|${slotIndex}`;
+    dialog.showModal();
+}
+
+function closeBookingDialog() {
+    const dialog = document.getElementById("bookingDialog");
+    dialog.close();
+}
+
+document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const [date, slotIndex] = formData.get("date").split("|");
+    const speaker = formData.get("speaker");
+    const title = formData.get("title");
+    
+    // Create GitHub issue
+    const issueBody = `
+Date: ${date}
+Slot: ${parseInt(slotIndex) + 1}
+Speaker: ${speaker}
+Title: ${title}
+    `.trim();
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${window.location.pathname.split('/')[1]}/issues`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'Authorization': `token ${localStorage.getItem('github_token')}`
+            },
+            body: JSON.stringify({
+                title: `Booking Request: ${date} - ${speaker}`,
+                body: issueBody,
+                labels: ['booking-request']
+            })
         });
-    });
-    
-    // Handle form submission
-    bookingForm.addEventListener("submit", (e) => {
-        const name = document.getElementById("name").value;
-        const title = document.getElementById("title").value;
-        const date = document.getElementById("slotDate").value;
         
-        const issueTitle = encodeURIComponent(`LangLunch Booking: ${date}`);
-        const body = encodeURIComponent(`**Name**: ${name}\n**Presentation Title**: ${title}\n**Preferred Date**: ${date}`);
-        
-        const url = `https://github.com/Learning-website-sample/aravind_website/issues/new?title=${issueTitle}&body=${body}`;
-        window.open(url, '_blank');
-        bookingDialog.close();
-        e.preventDefault();
-    });
+        if (response.ok) {
+            alert("Booking request submitted successfully!");
+            closeBookingDialog();
+            closeEventDialog();
+        } else {
+            throw new Error('Failed to create issue');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert("Failed to submit booking request. Please try again later.");
+    }
 });
 </script>
