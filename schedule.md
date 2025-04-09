@@ -1,7 +1,8 @@
 ---
-layout: page
+layout: single
 title: Schedule
 permalink: /schedule/
+classes: wide
 ---
 
 # LangLunches Schedule
@@ -11,7 +12,7 @@ All sessions are held on Wednesdays at 12:00 and 12:30.
 <div class="calendar-legend">
     <div class="legend-item">
         <div class="legend-color" style="background: #e6ffe6;"></div>
-        <span>Available Tuesday</span>
+        <span>Available Wednesday</span>
     </div>
     <div class="legend-item">
         <div class="legend-color" style="background: #90EE90;"></div>
@@ -138,12 +139,12 @@ All sessions are held on Wednesdays at 12:00 and 12:30.
     justify-content: center;
 }
 
-.calendar-tuesday {
+.calendar-wednesday {
     background: #e6ffe6;
     cursor: pointer;
 }
 
-.calendar-tuesday:hover {
+.calendar-wednesday:hover {
     background: #d4ffd4;
 }
 
@@ -247,15 +248,6 @@ button:hover {
     border: 1px solid #ddd;
     border-radius: 4px;
 }
-
-.calendar-wednesday {
-    background: #e6ffe6;
-    cursor: pointer;
-}
-
-.calendar-wednesday:hover {
-    background: #d4ffd4;
-}
 </style>
 
 <script>
@@ -266,9 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const bookingContent = document.getElementById('bookingContent');
     const bookingForm = document.getElementById('bookingForm');
     const slotDateInput = document.getElementById('slotDate');
-
-    // Update form action to submit to langlunches.github.io repository
-    bookingForm.action = "https://github.com/langlunches/langlunches.github.io/issues/new";
 
     // Add click handlers to calendar days
     document.querySelectorAll('.calendar-day').forEach(day => {

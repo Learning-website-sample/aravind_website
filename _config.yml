@@ -3,6 +3,10 @@ description: Biweekly talks by PhDs and postdocs in the LST department at UdS
 baseurl: ""
 url: "https://langlunches.github.io"
 
+# Theme settings
+remote_theme: mmistakes/minimal-mistakes@4.24.0
+minimal_mistakes_skin: "default"
+
 # Build settings
 markdown: kramdown
 permalink: pretty
@@ -19,7 +23,10 @@ defaults:
     scope:
       path: ""
     values:
-      layout: "default"
+      layout: "single"
+      author: "LST Department"
+      share: false
+      comments: false
 
 # Exclude from processing
 exclude:
