@@ -23,7 +23,7 @@ Wednesdays 12:00 - 13:00 (biweekly), Building A2.2, Room 2.13
 ## Signing up to present
 
 To sign up for a presentation slot:
-1. Visit our [Schedule page](/schedule/)
+1. Visit our [Schedule page]({{ site.baseurl }}/schedule/)
 2. Click on any available slot (shown in orange)
 3. Enter your name and presentation title
 4. Submit the form

@@ -318,4 +318,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<script src="{{ '/assets/js/calendar.js' | relative_url }}"></script>
+<script src="{{ site.baseurl }}/assets/js/calendar.js"></script>
