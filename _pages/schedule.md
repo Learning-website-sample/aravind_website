@@ -153,36 +153,36 @@ All sessions are held on Wednesdays at 12:00 and 12:30.
 }
 
 .calendar-wednesday {
-    background: #e6ffe6;
-    cursor: pointer;
+    background: #e6ffe6 !important;
+    cursor: pointer !important;
 }
 
 .calendar-wednesday:hover {
-    background: #d4ffd4;
+    background: #d4ffd4 !important;
 }
 
 .calendar-event {
-    background: #90EE90;
-    cursor: pointer;
+    background: #90EE90 !important;
+    cursor: pointer !important;
 }
 
 .calendar-event:hover {
-    background: #7fdd7f;
+    background: #7fdd7f !important;
 }
 
 .calendar-full {
-    background: #ff6b6b;
-    cursor: pointer;
+    background: #ff6b6b !important;
+    cursor: pointer !important;
 }
 
 .calendar-full:hover {
-    background: #ff5252;
+    background: #ff5252 !important;
 }
 
 .calendar-past {
-    background: #f0f0f0;
-    color: #999;
-    cursor: not-allowed;
+    background: #f0f0f0 !important;
+    color: #999 !important;
+    cursor: not-allowed !important;
 }
 
 .calendar-empty {
@@ -205,6 +205,12 @@ dialog {
     border: 1px solid #ddd;
     max-width: 500px;
     width: 90%;
+    position: relative;
+    z-index: 1000;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .form-group {
@@ -263,4 +269,46 @@ button:hover {
 }
 </style>
 
-<script src="{{ site.baseurl }}/assets/js/calendar.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Calendar script loaded");
+    const days = document.querySelectorAll(".calendar-wednesday, .calendar-event, .calendar-full");
+    const eventDialog = document.getElementById("eventDialog");
+    const eventContent = document.getElementById("eventContent");
+    const bookingDialog = document.getElementById("bookingDialog");
+    const bookingForm = document.getElementById("bookingForm");
+  
+    console.log("Found calendar days:", days.length);
+  
+    days.forEach(day => {
+      if (day.classList.contains("calendar-past")) return;
+  
+      day.addEventListener("click", () => {
+        const date = day.getAttribute("data-date");
+        const events = day.getAttribute("data-events");
+  
+        if (events) {
+          eventContent.innerHTML = `<p>${events}</p>`;
+          eventDialog.showModal();
+        } else {
+          document.getElementById("slotDate").value = date;
+          bookingDialog.showModal();
+        }
+      });
+    });
+  
+    bookingForm.addEventListener("submit", (e) => {
+      const name = document.getElementById("name").value;
+      const title = document.getElementById("title").value;
+      const date = document.getElementById("slotDate").value;
+  
+      const issueTitle = encodeURIComponent(`LangLunch Booking: ${date}`);
+      const body = encodeURIComponent(`**Name**: ${name}\n**Presentation Title**: ${title}\n**Preferred Date**: ${date}`);
+  
+      const url = `https://github.com/Learning-website-sample/aravind_website/issues/new?title=${issueTitle}&body=${body}`;
+      window.open(url, '_blank');
+      bookingDialog.close();
+      e.preventDefault();
+    });
+});
+</script>
