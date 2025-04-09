@@ -317,3 +317,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<script src="{{ '/assets/js/calendar.js' | relative_url }}"></script>
