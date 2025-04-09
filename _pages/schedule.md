@@ -12,7 +12,7 @@ All sessions are held on Wednesdays at 12:00 and 12:30.
 <div class="calendar-legend">
     <div class="legend-item">
         <div class="legend-color" style="background: #e6ffe6;"></div>
-        <span>Available Tuesday</span>
+        <span>Available Wednesday</span>
     </div>
     <div class="legend-item">
         <div class="legend-color" style="background: #90EE90;"></div>
@@ -90,7 +90,7 @@ All sessions are held on Wednesdays at 12:00 and 12:30.
 
 <dialog id="bookingDialog">
     <div id="bookingContent"></div>
-    <form id="bookingForm" action="https://github.com/langlunches/langlunches.github.io/issues/new" method="get" target="_blank">
+    <form id="bookingForm" action="https://github.com/Learning-website-sample/aravind_website/issues/new" method="get" target="_blank">
         <input type="hidden" id="slotDate" name="slotDate">
         <div class="form-group">
             <label for="name">Your Name:</label>
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const slotDateInput = document.getElementById('slotDate');
 
     // Update form action to submit to langlunches.github.io repository
-    bookingForm.action = "https://github.com/langlunches/langlunches.github.io/issues/new";
+    bookingForm.action = "https://github.com/Learning-website-sample/aravind_website/issues/new";
 
     // Add click handlers to calendar days
     document.querySelectorAll('.calendar-day').forEach(day => {
