@@ -6,7 +6,7 @@ permalink: /schedule/
 
 # LangLunches Schedule
 
-All sessions are held on Tuesdays at 12:00 and 12:30.
+All sessions are held on Wednesdays at 12:00 and 12:30.
 
 <div class="calendar-legend">
     <div class="legend-item">
@@ -61,14 +61,14 @@ All sessions are held on Tuesdays at 12:00 and 12:30.
                     {% for day in (1..days_in_month) %}
                         {% assign current_day = month_start_date | date: "%s" | plus: 86400 | times: forloop.index0 | date: "%Y-%m-%d" %}
                         {% assign day_of_week = current_day | date: "%w" | plus: 0 %}
-                        {% assign is_tuesday = day_of_week == 2 %}
+                        {% assign is_wednesday = day_of_week == 3 %}
                         {% assign is_past = current_day < current_date %}
                         
                         {% assign day_events = site.data.events.events | where: "date", current_day | first %}
                         {% assign has_events = day_events != nil %}
                         {% assign is_full = has_events and day_events.slots.size >= 2 %}
                         
-                        <div class="calendar-day {% if is_tuesday and not is_past %}calendar-tuesday{% endif %} {% if has_events %}calendar-event{% endif %} {% if is_full %}calendar-full{% endif %} {% if is_past %}calendar-past{% endif %}"
+                        <div class="calendar-day {% if is_wednesday and not is_past %}calendar-wednesday{% endif %} {% if has_events %}calendar-event{% endif %} {% if is_full %}calendar-full{% endif %} {% if is_past %}calendar-past{% endif %}"
                              data-date="{{ current_day }}"
                              {% if has_events %}
                              data-events="{% for slot in day_events.slots %}{% if slot.title %}<b>Presentation:</b> {{ slot.title }} by {{ slot.speaker }}{% if forloop.index < day_events.slots.size %}<br>{% endif %}{% endif %}{% endfor %}"
@@ -89,7 +89,7 @@ All sessions are held on Tuesdays at 12:00 and 12:30.
 
 <dialog id="bookingDialog">
     <div id="bookingContent"></div>
-    <form id="bookingForm" action="https://github.com/Learning-website-sample/aravind_website/issues/new" method="get" target="_blank">
+    <form id="bookingForm" action="https://github.com/langlunches/langlunches.github.io/issues/new" method="get" target="_blank">
         <input type="hidden" id="slotDate" name="slotDate">
         <div class="form-group">
             <label for="name">Your Name:</label>
@@ -247,6 +247,15 @@ button:hover {
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
+.calendar-wednesday {
+    background: #e6ffe6;
+    cursor: pointer;
+}
+
+.calendar-wednesday:hover {
+    background: #d4ffd4;
+}
 </style>
 
 <script>
@@ -257,103 +266,53 @@ document.addEventListener('DOMContentLoaded', function() {
     const bookingContent = document.getElementById('bookingContent');
     const bookingForm = document.getElementById('bookingForm');
     const slotDateInput = document.getElementById('slotDate');
-    let selectedDate = null;
 
-    // Load events from Jekyll's data
-    function loadEvents() {
-        try {
-            const events = {{ site.data.events.events | jsonify }};
-            return events || [];
-        } catch (error) {
-            console.error('Error loading events:', error);
-            return [];
-        }
-    }
+    // Update form action to submit to langlunches.github.io repository
+    bookingForm.action = "https://github.com/langlunches/langlunches.github.io/issues/new";
 
-    // Format date for display
-    function formatDate(dateStr) {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        });
-    }
-
-    // Handle clicks on calendar days
-    document.querySelectorAll('.calendar-tuesday, .calendar-event, .calendar-full').forEach(day => {
+    // Add click handlers to calendar days
+    document.querySelectorAll('.calendar-day').forEach(day => {
         day.addEventListener('click', function() {
-            const date = this.getAttribute('data-date');
-            const events = this.getAttribute('data-events');
-            const allEvents = loadEvents();
-            const dayEvents = allEvents.find(e => e.date === date);
+            const date = this.dataset.date;
+            const events = this.dataset.events;
             
-            if (dayEvents && dayEvents.slots.length >= 2) {
-                // Show event details for full days
-                eventContent.innerHTML = `
-                    <h3>Events on ${formatDate(date)}</h3>
-                    <div class="event-details">
-                        ${events}
-                    </div>
-                `;
-                eventDialog.showModal();
-                return;
+            if (this.classList.contains('calendar-past')) {
+                return; // Don't show dialog for past dates
             }
-            
+
             if (events) {
-                // Show event details and booking form for days with one booking
-                bookingContent.innerHTML = `
-                    <h3>Current Events on ${formatDate(date)}</h3>
-                    <div class="event-details">
-                        ${events}
-                    </div>
-                    <hr>
-                    <h3>Book an Additional Slot</h3>
-                    <p>There is still one slot available on this day.</p>
-                `;
-                bookingDialog.showModal();
-                selectedDate = date;
+                // Show existing events
+                eventContent.innerHTML = `<h3>Events for ${date}</h3><p>${events}</p>`;
+                eventDialog.showModal();
+            } else if (this.classList.contains('calendar-wednesday')) {
+                // Show booking dialog
+                bookingContent.innerHTML = `<h3>Book a slot for ${date}</h3>`;
                 slotDateInput.value = date;
-            } else {
-                // Show booking form for empty days
-                bookingContent.innerHTML = `
-                    <h3>Book a Presentation Slot</h3>
-                    <p>Date: ${formatDate(date)}</p>
-                    <p>Time: 12:00 PM - 12:30 PM</p>
-                `;
                 bookingDialog.showModal();
-                selectedDate = date;
-                slotDateInput.value = date;
             }
         });
     });
 
-    // Handle booking form submission
+    // Handle form submission
     bookingForm.addEventListener('submit', function(e) {
+        e.preventDefault();
         const formData = new FormData(this);
-        const date = formData.get('slotDate');
-        const name = formData.get('name');
         const title = formData.get('title');
+        const name = formData.get('name');
+        const date = formData.get('slotDate');
         
-        // Create GitHub issue title and body
-        const issueTitle = `Booking Request: ${title} on ${formatDate(date)}`;
-        const issueBody = `## Booking Request\n\n` +
-            `- **Date:** ${formatDate(date)}\n` +
-            `- **Time:** 12:00 PM - 12:30 PM\n` +
-            `- **Speaker:** ${name}\n` +
-            `- **Title:** ${title}\n\n` +
-            `Please review this booking request and update the events data file accordingly.`;
+        // Create issue body with formatted content
+        const body = `## LangLunches Booking Request\n\n` +
+                    `- **Date:** ${date}\n` +
+                    `- **Speaker:** ${name}\n` +
+                    `- **Title:** ${title}\n\n` +
+                    `Please review and approve this booking request.`;
         
-        // Set the form action with the issue parameters
-        this.action = `https://github.com/Learning-website-sample/aravind_website/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=booking-request`;
-    });
-
-    // Handle dialog close buttons
-    document.querySelectorAll('dialog button[type="button"]').forEach(button => {
-        button.addEventListener('click', function() {
-            this.closest('dialog').close();
-        });
+        // Update form action with issue body and labels
+        this.action += `?title=LangLunches Booking: ${name}&body=${encodeURIComponent(body)}&labels=booking-request`;
+        
+        // Submit the form
+        this.submit();
     });
 });
 </script>
