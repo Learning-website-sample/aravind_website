@@ -67,12 +67,25 @@ All sessions are held on Wednesdays at 12:00 and 12:30.
                         
                         {% assign day_events = site.data.events.events | where: "date", current_day | first %}
                         {% assign has_events = day_events != nil %}
-                        {% assign is_full = has_events and day_events.slots.size >= 2 %}
+                        {% assign booked_slots = 0 %}
+                        {% if has_events %}
+                            {% for slot in day_events.slots %}
+                                {% if slot.title != "" and slot.speaker != "" %}
+                                    {% assign booked_slots = booked_slots | plus: 1 %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% assign is_full = booked_slots >= 2 %}
+                        {% assign is_partial = booked_slots == 1 %}
                         
-                        <div class="calendar-day {% if is_wednesday and not is_past %}calendar-wednesday{% endif %} {% if has_events %}calendar-event{% endif %} {% if is_full %}calendar-full{% endif %} {% if is_past %}calendar-past{% endif %}"
+                        <div class="calendar-day 
+                            {% if is_wednesday and not is_past %}calendar-wednesday{% endif %}
+                            {% if is_partial %}calendar-event{% endif %}
+                            {% if is_full %}calendar-full{% endif %}
+                            {% if is_past %}calendar-past{% endif %}"
                              data-date="{{ current_day }}"
                              {% if has_events %}
-                             data-events="{% for slot in day_events.slots %}{% if slot.title %}<b>Presentation:</b> {{ slot.title }} by {{ slot.speaker }}{% if forloop.index < day_events.slots.size %}<br>{% endif %}{% endif %}{% endfor %}"
+                             data-events="{% for slot in day_events.slots %}{% if slot.title != "" and slot.speaker != "" %}<b>Presentation:</b> {{ slot.title }} by {{ slot.speaker }}{% if forloop.index < day_events.slots.size %}<br>{% endif %}{% endif %}{% endfor %}"
                              {% endif %}>
                             {{ day }}
                         </div>
@@ -139,12 +152,12 @@ All sessions are held on Wednesdays at 12:00 and 12:30.
     justify-content: center;
 }
 
-.calendar-tuesday {
+.calendar-wednesday {
     background: #e6ffe6;
     cursor: pointer;
 }
 
-.calendar-tuesday:hover {
+.calendar-wednesday:hover {
     background: #d4ffd4;
 }
 
@@ -248,74 +261,6 @@ button:hover {
     border: 1px solid #ddd;
     border-radius: 4px;
 }
-
-.calendar-wednesday {
-    background: #e6ffe6;
-    cursor: pointer;
-}
-
-.calendar-wednesday:hover {
-    background: #d4ffd4;
-}
 </style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const eventDialog = document.getElementById('eventDialog');
-    const bookingDialog = document.getElementById('bookingDialog');
-    const eventContent = document.getElementById('eventContent');
-    const bookingContent = document.getElementById('bookingContent');
-    const bookingForm = document.getElementById('bookingForm');
-    const slotDateInput = document.getElementById('slotDate');
-
-    // Update form action to submit to langlunches.github.io repository
-    bookingForm.action = "https://github.com/Learning-website-sample/aravind_website/issues/new";
-
-    // Add click handlers to calendar days
-    document.querySelectorAll('.calendar-day').forEach(day => {
-        day.addEventListener('click', function() {
-            const date = this.dataset.date;
-            const events = this.dataset.events;
-            
-            if (this.classList.contains('calendar-past')) {
-                return; // Don't show dialog for past dates
-            }
-
-            if (events) {
-                // Show existing events
-                eventContent.innerHTML = `<h3>Events for ${date}</h3><p>${events}</p>`;
-                eventDialog.showModal();
-            } else if (this.classList.contains('calendar-wednesday')) {
-                // Show booking dialog
-                bookingContent.innerHTML = `<h3>Book a slot for ${date}</h3>`;
-                slotDateInput.value = date;
-                bookingDialog.showModal();
-            }
-        });
-    });
-
-    // Handle form submission
-    bookingForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const title = formData.get('title');
-        const name = formData.get('name');
-        const date = formData.get('slotDate');
-        
-        // Create issue body with formatted content
-        const body = `## LangLunches Booking Request\n\n` +
-                    `- **Date:** ${date}\n` +
-                    `- **Speaker:** ${name}\n` +
-                    `- **Title:** ${title}\n\n` +
-                    `Please review and approve this booking request.`;
-        
-        // Update form action with issue body and labels
-        this.action += `?title=LangLunches Booking: ${name}&body=${encodeURIComponent(body)}&labels=booking-request`;
-        
-        // Submit the form
-        this.submit();
-    });
-});
-</script>
 
 <script src="{{ site.baseurl }}/assets/js/calendar.js"></script>
