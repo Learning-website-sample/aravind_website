@@ -1,48 +1,32 @@
 title: LangLunches
 description: Biweekly talks by PhDs and postdocs in the LST department at UdS
 baseurl: ""
-url: ""
+url: "https://langlunches.github.io"
 
 # Build settings
 markdown: kramdown
-theme: minima
-plugins:
-  - jekyll-feed
-  - jekyll-seo-tag
+permalink: pretty
+
+# Collections
+collections:
+  pages:
+    output: true
+    permalink: /:collection/:path/
+
+# Default front matter
+defaults:
+  -
+    scope:
+      path: ""
+    values:
+      layout: "default"
 
 # Exclude from processing
 exclude:
   - Gemfile
   - Gemfile.lock
+  - node_modules
   - vendor
-  - README.md
-
-# Collections
-collections:
-  pages:
-    permalink: /:collection/:path/
-    output: true
-
-# Defaults
-defaults:
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: "page"
-  - scope:
-      path: ""
-      type: "posts"
-    values:
-      layout: "post"
-
-# Navigation
-header_pages:
-  - schedule.md
-  - register.md
-
-# Site structure
-permalink: pretty
-
-# Data files
-data_dir: _data
+  - .git/
+  - .github/
+  - .gitignore 
