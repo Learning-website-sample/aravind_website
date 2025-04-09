@@ -1,8 +1,7 @@
-name: "LangLunches"
-title: "LangLunches - Research Talks at UdS"
-description: "Biweekly talks by PhDs and postdocs in the LST department at UdS"
-baseurl: ""  # the subpath of your site, e.g. /blog
-url: "https://langlunches.github.io"
+title: LangLunches
+description: Biweekly talks by PhDs and postdocs in the LST department at UdS
+baseurl: ""
+url: ""
 
 # Build settings
 markdown: kramdown
@@ -15,10 +14,8 @@ plugins:
 exclude:
   - Gemfile
   - Gemfile.lock
-  - node_modules
   - vendor
-  - .bundle
-  - .github
+  - README.md
 
 # Collections
 collections:
@@ -41,5 +38,11 @@ defaults:
 
 # Navigation
 header_pages:
-  - Schedule
-  - Register
+  - schedule.md
+  - register.md
+
+# Site structure
+permalink: pretty
+
+# Data files
+data_dir: _data

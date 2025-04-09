@@ -1,0 +1,31 @@
+events:
+  - date: "2024-04-09"
+    slots:
+      - title: "Introduction to Python"
+        speaker: "John Doe"
+      - title: "JavaScript Basics"
+        speaker: "Jane Smith"
+  - date: "2024-04-23"
+    slots:
+      - title: "Data Structures in Java"
+        speaker: "Mike Johnson"
+      - title: "Web Development with React"
+        speaker: "Sarah Wilson"
+  - date: "2024-05-07"
+    slots:
+      - title: "Machine Learning Basics"
+        speaker: "Alex Brown"
+      - title: ""
+        speaker: ""
+  - date: "2024-05-21"
+    slots:
+      - title: ""
+        speaker: ""
+      - title: ""
+        speaker: ""
+  - date: "2024-06-04"
+    slots:
+      - title: "Cloud Computing"
+        speaker: "Emma Davis"
+      - title: "DevOps Practices"
+        speaker: "Tom Wilson" 

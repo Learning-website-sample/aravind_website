@@ -4,150 +4,267 @@ title: Schedule
 permalink: /schedule/
 ---
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+# LangLunches Schedule
+
+All sessions are held on Tuesdays at 12:00 and 12:30.
 
 <div class="calendar-container">
-  <div id="calendar"></div>
+    <div class="calendar-grid">
+        {% assign current_date = site.time | date: "%Y-%m-%d" %}
+        {% assign current_year = current_date | date: "%Y" %}
+        {% assign current_month = current_date | date: "%m" | plus: 0 %}
+        
+        {% for month in (1..12) %}
+            {% assign month_start_date = current_year | append: "-" | append: month | append: "-01" %}
+            {% assign month_start_timestamp = month_start_date | date: "%s" | plus: 0 %}
+            {% assign days_in_month = month_start_timestamp | date: "%t" | plus: 0 %}
+            {% assign first_day = month_start_date | date: "%w" | plus: 0 %}
+            
+            <div class="month-container">
+                <h3>{{ month_start_date | date: "%B %Y" }}</h3>
+                <div class="calendar-grid">
+                    <div class="calendar-header">Sun</div>
+                    <div class="calendar-header">Mon</div>
+                    <div class="calendar-header">Tue</div>
+                    <div class="calendar-header">Wed</div>
+                    <div class="calendar-header">Thu</div>
+                    <div class="calendar-header">Fri</div>
+                    <div class="calendar-header">Sat</div>
+                    
+                    {% for i in (1..first_day) %}
+                        <div class="calendar-empty"></div>
+                    {% endfor %}
+                    
+                    {% for day in (1..days_in_month) %}
+                        {% assign current_day = month_start_date | date: "%s" | plus: 86400 | times: forloop.index0 | date: "%Y-%m-%d" %}
+                        {% assign day_of_week = current_day | date: "%w" | plus: 0 %}
+                        {% assign is_tuesday = day_of_week == 2 %}
+                        
+                        {% assign day_events = site.data.events.events | where: "date", current_day | first %}
+                        {% assign has_events = day_events != nil %}
+                        {% assign is_full = has_events and day_events.slots.size >= 2 %}
+                        
+                        <div class="calendar-day {% if is_tuesday %}calendar-tuesday{% endif %} {% if has_events %}calendar-event{% endif %} {% if is_full %}calendar-full{% endif %}"
+                             data-date="{{ current_day }}"
+                             {% if has_events %}
+                             data-events="{% for slot in day_events.slots %}{% if slot.title %}<b>Presentation:</b> {{ slot.title }} by {{ slot.speaker }}{% if forloop.index < day_events.slots.size %}<br>{% endif %}{% endif %}{% endfor %}"
+                             {% endif %}>
+                            {{ day }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
-<div class="booking-modal" id="bookingModal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Book a Presentation Slot</h2>
-    <form id="bookingForm">
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-      </div>
-      <div class="form-group">
-        <label for="title">Presentation Title:</label>
-        <input type="text" id="title" name="title" required>
-      </div>
-      <input type="hidden" id="slotDate" name="slotDate">
-      <input type="hidden" id="slotTime" name="slotTime">
-      <button type="submit">Submit</button>
+<dialog id="eventDialog">
+    <div id="eventContent"></div>
+    <button type="button" onclick="this.closest('dialog').close()">Close</button>
+</dialog>
+
+<dialog id="bookingDialog">
+    <div id="bookingContent"></div>
+    <form id="bookingForm" action="https://github.com/akrishnan/langlunches.github.io/issues/new" method="get" target="_blank">
+        <input type="hidden" id="slotDate" name="slotDate">
+        <div class="form-group">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="title">Presentation Title:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <button type="submit">Submit Booking Request</button>
+            <button type="button" onclick="this.closest('dialog').close()">Cancel</button>
+        </div>
     </form>
-  </div>
-</div>
-
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+</dialog>
 
 <style>
-.calendar-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-.booking-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
-.modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 5px; }
-.close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; }
-.form-group input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
-button:hover { background-color: #45a049; }
-.status-message { display: none; margin-top: 10px; padding: 10px; border-radius: 4px; }
-.success { background-color: #dff0d8; color: #3c763d; }
-.error { background-color: #f2dede; color: #a94442; }
+.calendar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 30px;
+}
+
+.calendar-header {
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    background: #f0f0f0;
+}
+
+.calendar-day {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    cursor: pointer;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-tuesday {
+    background: #e6ffe6;
+}
+
+.calendar-event {
+    background: #90EE90;
+}
+
+.calendar-full {
+    background: #ff6b6b;
+    cursor: pointer;
+}
+
+.calendar-empty {
+    background: #f9f9f9;
+}
+
+dialog {
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 8px 16px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+.calendar-legend {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ddd;
+}
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Use relative path to data file
-  fetch('/data/slots.yml')
-    .then(response => response.text())
-    .then(yaml => {
-      const slots = jsyaml.load(yaml).slots;
-      const events = slots.map(slot => ({
-        title: slot.speaker ? `${slot.speaker}: ${slot.title}` : 'Available',
-        start: `${slot.date}T${slot.time}`,
-        end: `${slot.date}T${slot.time}`,
-        backgroundColor: slot.speaker ? '#4CAF50' : '#ff9800',
-        extendedProps: {
-          booked: !!slot.speaker,
-          date: slot.date,
-          time: slot.time
-        }
-      }));
+    const eventDialog = document.getElementById('eventDialog');
+    const bookingDialog = document.getElementById('bookingDialog');
+    const eventContent = document.getElementById('eventContent');
+    const bookingContent = document.getElementById('bookingContent');
+    const bookingForm = document.getElementById('bookingForm');
+    const slotDateInput = document.getElementById('slotDate');
+    let selectedDate = null;
 
-      var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-        initialView: 'dayGridMonth',
-        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
-        slotMinTime: '12:00:00',
-        slotMaxTime: '13:00:00',
-        allDaySlot: false,
-        events: events,
-        eventClick: function(info) {
-          if (!info.event.extendedProps.booked) {
-            document.getElementById('slotDate').value = info.event.extendedProps.date;
-            document.getElementById('slotTime').value = info.event.extendedProps.time;
-            document.getElementById('bookingModal').style.display = 'block';
-          }
+    // Load events from Jekyll's data
+    function loadEvents() {
+        try {
+            const events = {{ site.data.events.events | jsonify }};
+            return events || [];
+        } catch (error) {
+            console.error('Error loading events:', error);
+            return [];
         }
-      });
-      calendar.render();
+    }
+
+    // Handle clicks on calendar days
+    document.querySelectorAll('.calendar-tuesday, .calendar-event, .calendar-full').forEach(day => {
+        day.addEventListener('click', function() {
+            const date = this.getAttribute('data-date');
+            const events = this.getAttribute('data-events');
+            const allEvents = loadEvents();
+            const dayEvents = allEvents.find(e => e.date === date);
+            
+            if (dayEvents && dayEvents.slots.length >= 2) {
+                // Show event details for full days
+                eventContent.innerHTML = '<h3>Events on this day:</h3>' + events;
+                eventDialog.showModal();
+                return;
+            }
+            
+            if (events) {
+                // Show event details and booking form for days with one booking
+                bookingContent.innerHTML = '<h3>Current Events on this day:</h3>' + events + 
+                    '<hr><h3>Book an Additional Slot</h3>' +
+                    '<p>There is still one slot available on this day.</p>';
+                bookingDialog.showModal();
+                selectedDate = date;
+                slotDateInput.value = date;
+            } else {
+                // Show booking form for empty days
+                bookingContent.innerHTML = '<h3>Book a Presentation Slot</h3>';
+                bookingDialog.showModal();
+                selectedDate = date;
+                slotDateInput.value = date;
+            }
+        });
     });
 
-  // Modal handling
-  document.querySelector('.close').onclick = () => document.getElementById('bookingModal').style.display = 'none';
-  window.onclick = (event) => { if (event.target == document.getElementById('bookingModal')) document.getElementById('bookingModal').style.display = 'none'; }
+    // Handle booking form submission
+    bookingForm.addEventListener('submit', function(e) {
+        const formData = new FormData(this);
+        const date = formData.get('slotDate');
+        const name = formData.get('name');
+        const title = formData.get('title');
+        
+        // Create GitHub issue title and body
+        const issueTitle = `Booking Request: ${title} on ${date}`;
+        const issueBody = `## Booking Request\n\n` +
+            `- **Date:** ${date}\n` +
+            `- **Speaker:** ${name}\n` +
+            `- **Title:** ${title}\n\n` +
+            `Please review this booking request and update the events data file accordingly.`;
+        
+        // Set the form action with the issue parameters
+        this.action = `https://github.com/akrishnan/langlunches.github.io/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=booking-request`;
+    });
 
-  // Form submission
-  document.getElementById('bookingForm').onsubmit = async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = {
-      date: formData.get('slotDate'),
-      time: formData.get('slotTime'),
-      speaker: formData.get('name'),
-      title: formData.get('title')
-    };
-
-    // Create issue body
-    const issueBody = `## Presentation Details
-- **Speaker:** ${data.speaker}
-- **Title:** ${data.title}
-- **Date:** ${data.date}
-- **Time:** ${data.time}
-
-This issue was created automatically from the booking form.`;
-
-    try {
-      const response = await fetch('https://api.github.com/repos/LangLunches/langlunches.github.io/issues', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json'
-        },
-        body: JSON.stringify({
-          title: `[Booking] ${data.speaker} - ${data.title}`,
-          body: issueBody,
-          labels: ['booking']
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create issue');
-      }
-
-      // Show success message
-      const statusDiv = document.createElement('div');
-      statusDiv.className = 'status-message success';
-      statusDiv.textContent = 'Thank you for your submission! We will process your booking shortly.';
-      this.appendChild(statusDiv);
-      statusDiv.style.display = 'block';
-
-      // Close modal after 2 seconds
-      setTimeout(() => {
-        document.getElementById('bookingModal').style.display = 'none';
-        statusDiv.remove();
-      }, 2000);
-
-    } catch (error) {
-      // Show error message
-      const statusDiv = document.createElement('div');
-      statusDiv.className = 'status-message error';
-      statusDiv.textContent = 'Sorry, there was an error submitting your booking. Please try again later.';
-      this.appendChild(statusDiv);
-      statusDiv.style.display = 'block';
-    }
-  }
+    // Handle dialog close buttons
+    document.querySelectorAll('dialog button[type="button"]').forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('dialog').close();
+        });
+    });
 });
-</script> 
+</script>
