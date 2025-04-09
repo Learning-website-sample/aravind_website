@@ -22,6 +22,7 @@ defaults:
   -
     scope:
       path: ""
+      type: "pages"
     values:
       layout: "single"
       author: "LST Department"
